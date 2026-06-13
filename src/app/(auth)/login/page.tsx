@@ -102,6 +102,19 @@ export default function LoginPage() {
               Register company
             </Link>
           </div>
+
+          <div className="mt-6 p-4 bg-zinc-800/50 rounded-lg text-sm text-zinc-400 text-center border border-zinc-700/50">
+            <p className="font-medium text-zinc-300 mb-2">Demo Credentials</p>
+            <p>Email: <span className="text-cyan-400 select-all">admin@demo.com</span></p>
+            <p>Password: <span className="text-cyan-400 select-all">DemoPassword123!</span></p>
+            <button 
+              type="button" 
+              onClick={() => { setEmail('admin@demo.com'); setPassword('DemoPassword123!'); }}
+              className="mt-3 text-xs bg-zinc-700 hover:bg-zinc-600 text-white py-1 px-3 rounded transition-colors"
+            >
+              Auto-fill Credentials
+            </button>
+          </div>
         </div>
       </div>
     </div>

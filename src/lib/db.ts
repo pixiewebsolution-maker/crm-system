@@ -1,3 +1,5 @@
+import { Pool } from 'pg'
+import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
 
 // SAAS PRODUCTION NOTE:
@@ -7,11 +9,11 @@ import { PrismaClient } from '@prisma/client'
 // See: https://www.prisma.io/docs/guides/performance-and-optimization/connection-management
 
 const prismaClientSingleton = () => {
-  return new PrismaClient({
-    // Uncomment for detailed query logging in development
-    // log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  })
-  // .$extends(withAccelerate()) // If using Prisma Accelerate
+  const connectionString = `${process.env.DATABASE_URL}`
+  const pool = new Pool({ connectionString })
+  const adapter = new PrismaPg(pool)
+
+  return new PrismaClient({ adapter })
 }
 
 declare const globalThis: {

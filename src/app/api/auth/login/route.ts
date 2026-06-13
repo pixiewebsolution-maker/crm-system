@@ -15,7 +15,8 @@ export async function POST(req: NextRequest) {
     const { email, password } = loginSchema.parse(body)
 
     const user = await db.user.findUnique({
-      where: { email }
+      where: { email },
+      include: { memberships: true }
     })
 
     if (!user) {
@@ -31,8 +32,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
     }
 
+    const primaryMembership = user.memberships[0]
+    const role = user.isSuperAdmin ? 'SUPER_ADMIN' : (primaryMembership?.role || 'USER')
+    const companyId = primaryMembership?.companyId || null
+
     // Create session
-    await createSession(user.id, user.companyId, user.role)
+    await createSession(user.id, companyId, role)
 
     // Log the login activity
     await db.user.update({
@@ -45,10 +50,10 @@ export async function POST(req: NextRequest) {
       user: {
         id: user.id,
         email: user.email,
-        role: user.role,
+        role: role,
         firstName: user.firstName,
         lastName: user.lastName,
-        companyId: user.companyId
+        companyId: companyId
       }
     })
   } catch (error) {
